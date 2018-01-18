@@ -5,6 +5,8 @@ import (
 	"net/http"
 
 	"github.com/gorilla/websocket"
+	"github.com/labstack/echo"
+	"github.com/labstack/echo/middleware"
 )
 
 var clients = make(map[*websocket.Conn]bool) // connected clients
@@ -17,49 +19,62 @@ var upgrader = websocket.Upgrader{
 	},
 }
 
-// Define our message object
+var (
+	msgs = map[int]*Message{}
+	seq  = 1
+)
+
+// Message 消息结构体
 type Message struct {
-	Email    string `json:"email"`
-	Username string `json:"username"`
-	Message  string `json:"message"`
+	ID     int    `json:"id"`
+	Token  string `json:"token"`
+	Type   string `json:"type"` //donation
+	Name   string `json:"name"`
+	Amount string `json:"amount"`
+	Author string `json:"author"`
+	Intro  string `json:"intro"`
+	File   string `json:"file"`
 }
 
 func main() {
-	// Create a simple file server
-	fs := http.FileServer(http.Dir("./public"))
-	http.Handle("/", fs)
+	e := echo.New()
 
-	// Configure websocket route
-	http.HandleFunc("/ws", handleConnections)
-
-	http.HandleFunc("/api", handleApi)
-	// Start listening for incoming chat messages
+	e.Use(middleware.CORS())
+	// Middleware
+	e.Use(middleware.Logger())
+	e.Use(middleware.Recover())
+	e.GET("/ws", conn)
+	e.GET("/api", api)
+	e.GET("/list", list)
 	go handleMessages()
-
-	// Start the server on localhost port 8000 and log any errors
-	log.Println("http server started on :3344")
-	err := http.ListenAndServe(":3344", nil)
-	if err != nil {
-		log.Fatal("ListenAndServe: ", err)
-	}
+	e.Logger.Fatal(e.Start(":3344"))
 }
 
-func handleApi(w http.ResponseWriter, r *http.Request) {
-	var msg Message
-	msg.Email = "245561237@qq.com"
-	msg.Username = "ggtx"
-	msg.Message = "hello world!"
+func api(c echo.Context) error {
+	msg := Message{
+		ID: seq,
+	}
+	seq++
+	msg.ID = seq
+
+	msg.Name = c.QueryParam("name")
+	msg.Author = ""
+	msg.Token = ""
+	msg.Amount = c.QueryParam("amount")
+	msgs[msg.ID] = &msg
 	broadcast <- msg
 
+	return c.JSON(http.StatusCreated, msg)
 }
 
-func handleConnections(w http.ResponseWriter, r *http.Request) {
-	// Upgrade initial GET request to a websocket
-	ws, err := upgrader.Upgrade(w, r, nil)
+func list(c echo.Context) error {
+	return c.JSON(http.StatusCreated, msgs)
+}
+func conn(c echo.Context) error {
+	ws, err := upgrader.Upgrade(c.Response(), c.Request(), nil)
 	if err != nil {
-		log.Fatal(err)
+		return err
 	}
-	// Make sure we close the connection when the function returns
 	defer ws.Close()
 
 	// Register our new client
@@ -67,16 +82,19 @@ func handleConnections(w http.ResponseWriter, r *http.Request) {
 
 	for {
 		var msg Message
+		seq++
+		msg.ID = seq
 		// Read in a new message as JSON and map it to a Message object
 		err := ws.ReadJSON(&msg)
 		if err != nil {
-			log.Printf("error: %v", err)
+			log.Printf("handle error: %v", err)
 			delete(clients, ws)
 			break
 		}
 		// Send the newly received message to the broadcast channel
 		broadcast <- msg
 	}
+	return nil
 }
 
 func handleMessages() {
@@ -87,7 +105,7 @@ func handleMessages() {
 		for client := range clients {
 			err := client.WriteJSON(msg)
 			if err != nil {
-				log.Printf("error: %v", err)
+				log.Printf("client error: %v", err)
 				client.Close()
 				delete(clients, client)
 			}

@@ -101,10 +101,10 @@ func api(c echo.Context) error {
 	msg := Message{
 		ID: seq,
 	}
-	
+
 	token := c.QueryParam("token")
 	msgtype := c.QueryParam("type")
-	if msgtype == "donate" && token="112233" {
+	if msgtype == "donate" && token == "112233" {
 		seq++
 		msg.ID = seq
 

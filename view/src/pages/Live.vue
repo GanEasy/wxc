@@ -1,7 +1,7 @@
 <template>
   <div>
-  <div class="page__hd" style="">
-      <h1 class="page__title">“迎春送福•领墨宝献爱心”活动捐款清单</h1>
+  <div class="page__hd" >
+      <h1 class="page__title" style="font-size: 1.6em;">“迎春送福•领墨宝献爱心”活动捐款清单</h1>
   </div>
   <img src="../assets/cover.jpg" style="max-width: 100%;">
   

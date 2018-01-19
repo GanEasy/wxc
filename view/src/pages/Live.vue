@@ -3,16 +3,17 @@
   <div class="page__hd">
       <h1 class="page__title">捐赠人名单</h1>
       <p class="page__desc">排名不分先后，本名单实时更新！</p>
+      <p class="page__desc">捐款人次：{{list.length}}</p>
+      <p class="page__desc">捐款总金额：{{total}} 元</p>
   </div>
     <div class="weui-cells">
-        <div class="weui-cell" v-for="item in list" :key="item.id"  >
+        <div class="weui-cell" v-for="item in list" :key="item.id" >
             <div class="weui-cell__bd">
                 <p>{{item.name}}</p>
             </div>
             <div class="weui-cell__ft">{{item.amount}} 元</div>
         </div>
     </div>
-
   </div>
 </template>
 
@@ -30,9 +31,22 @@ export default {
       joined: false, // True if email and username have been filled in
       list: [
       ],
+      total:0,
     }
   },
   
+   watch: {
+    list: function (newQuestion) {
+        var _t =0;
+        for(var i=0;i<this.list.length;i++) {
+            var _tt =  parseFloat(this.list[i].amount)
+            if(_tt){
+                _t += _tt
+            }
+        }
+        this.total = Math.floor(_t * 100) / 100 
+    }
+  },
   
    
     mounted() {
@@ -43,46 +57,23 @@ export default {
     created: function() {
         var self = this;
         self.axios.get("http://localhost:3344/list").then((response) => {
-        console.log(response.data)
-
-        for(var k in response.data) {
-            var item = response.data[k]
-        //    console.log()
-           self.list.push({id:item.id,name:item.name,amount:item.amount})
-
-        }
-        //  for(var t=0;t<response.data.length;t++){
-        //         site.articles.push(response.data[t])
-        //     }
+        // console.log(response.data)
+            for(var k in response.data) {
+                var item = response.data[k]
+                var amount = Math.floor(item.amount * 100) / 100 
+                self.list.push({id:item.id,name:item.name,amount:amount})
+            }
         })
-
-
-
 
 
         self.ws = new WebSocket('ws://localhost:3344/ws');
         self.ws.addEventListener('message', function(e) {
             var msg = JSON.parse(e.data);
-            console.log("ret:",msg)
-            self.list.push({id:msg.id,name:msg.name,amount:msg.amount})
+             if(msg.type == "donate"){
+                var amount = Math.floor(msg.amount * 100) / 100 
+                self.list.push({id:msg.id,name:msg.name,amount:amount})
+            }
         });
-        // self.email = "121258121@qq.com"
-        // self.username = "易增辉"
-        // self.newMsg = "say hi"
-        setInterval(function() {
-        //   self.ws.send( 
-        //       JSON.stringify({
-        //           token: self.token,
-        //           email: self.email,
-        //           type:"text",
-        //           amount:"112",
-        //           name: self.username,
-        //           message: self.newMsg // Strip out html
-        //       }
-        //   ));
-          // ws.send('Hello, Server!');
-        }, 20000);
-        // this.newMsg = ''; // Reset newMsg
       },
 
     

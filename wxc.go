@@ -1,10 +1,14 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"net/http"
+	"strconv"
 
 	"github.com/gorilla/websocket"
+	"github.com/jinzhu/gorm"
+	_ "github.com/jinzhu/gorm/dialects/sqlite"
 	"github.com/labstack/echo"
 	"github.com/labstack/echo/middleware"
 )
@@ -26,14 +30,56 @@ var (
 
 // Message 消息结构体
 type Message struct {
-	ID     int    `json:"id"`
-	Token  string `json:"token"`
-	Type   string `json:"type"` //donation
-	Name   string `json:"name"`
-	Amount string `json:"amount"`
-	Author string `json:"author"`
-	Intro  string `json:"intro"`
-	File   string `json:"file"`
+	ID     int     `json:"id"`
+	Token  string  `json:"token"`
+	Type   string  `json:"type"` //donation
+	Name   string  `json:"name"`
+	Amount float64 `json:"amount"`
+	Author string  `json:"author"`
+	Intro  string  `json:"intro"`
+	File   string  `json:"file"`
+}
+
+//Donate  捐款记录
+type Donate struct {
+	gorm.Model
+	Name   string
+	Amount float64
+}
+
+var db *gorm.DB
+
+func init() {
+	var err error
+	db, err = gorm.Open("sqlite3", "mmbwgwxc.db")
+	if err != nil {
+		panic("连接数据库失败")
+	}
+	// 自动迁移模式
+	db.AutoMigrate(&Donate{})
+	defer db.Close()
+	initList()
+}
+
+func initList() {
+
+	var donates []Donate
+	db.Find(&donates)
+
+	if len(donates) > 0 {
+		for _, v := range donates {
+			msg := Message{
+				ID: seq,
+			}
+			seq++
+
+			msg.Name = v.Name
+			msg.Author = ""
+			msg.Token = ""
+			msg.Amount = v.Amount
+			msgs[msg.ID] = &msg
+		}
+	}
 }
 
 func main() {
@@ -51,19 +97,33 @@ func main() {
 }
 
 func api(c echo.Context) error {
+
 	msg := Message{
 		ID: seq,
 	}
-	seq++
-	msg.ID = seq
+	msgtype := c.QueryParam("type")
+	if msgtype == "donate" {
+		seq++
+		msg.ID = seq
 
-	msg.Name = c.QueryParam("name")
-	msg.Author = ""
-	msg.Token = ""
-	msg.Amount = c.QueryParam("amount")
-	msgs[msg.ID] = &msg
-	broadcast <- msg
+		msg.Name = c.QueryParam("name")
+		msg.Author = ""
+		msg.Token = ""
+		msg.Type = msgtype
+		msg.Amount, _ = strconv.ParseFloat(c.QueryParam("amount"), 32)
+		msgs[msg.ID] = &msg
+		var donate = Donate{Name: msg.Name, Amount: msg.Amount}
 
+		db, err := gorm.Open("sqlite3", "mmbwgwxc.db")
+		if err != nil {
+
+		}
+		// 自动迁移模式
+		defer db.Close()
+		db.Create(&donate)
+		fmt.Println(donate)
+		broadcast <- msg
+	}
 	return c.JSON(http.StatusCreated, msg)
 }
 

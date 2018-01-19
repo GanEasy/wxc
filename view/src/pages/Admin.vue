@@ -69,7 +69,7 @@
                         </div>
                     </div>
 
-                    <div class="weui-cells" v-if="list.length>0">
+                    <div class="weui-cells" v-if="list.length <1">
                         <div class="weui-cell" >
                             <div class="weui-cell__bd">
                                 <p>还没有捐款信息，快去新增一个吧</p>

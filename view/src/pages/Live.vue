@@ -56,7 +56,7 @@ export default {
     },
     created: function() {
         var self = this;
-        self.axios.get("http://localhost:3344/list").then((response) => {
+        self.axios.get("http://119.23.237.215:3344/list").then((response) => {
         // console.log(response.data)
             for(var k in response.data) {
                 var item = response.data[k]
@@ -66,7 +66,8 @@ export default {
         })
 
 
-        self.ws = new WebSocket('ws://localhost:3344/ws');
+        // self.ws = new WebSocket('ws://localhost:3344/ws');
+        self.ws = new WebSocket('ws://119.23.237.215:3344/ws');
         self.ws.addEventListener('message', function(e) {
             var msg = JSON.parse(e.data);
              if(msg.type == "donate"){

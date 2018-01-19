@@ -163,7 +163,7 @@ export default {
     },
     created: function() {
         var self = this;
-        self.axios.get("http://localhost:3344/list").then((response) => {
+        self.axios.get("http://119.23.237.215:3344/list").then((response) => {
             // console.log(response.data)
             for(var k in response.data) {
                 var item = response.data[k]
@@ -173,7 +173,7 @@ export default {
             }
         })
 
-        self.ws = new WebSocket('ws://localhost:3344/ws');
+        self.ws = new WebSocket('ws://119.23.237.215:3344/ws');
         self.ws.addEventListener('message', function(e) {
             var msg = JSON.parse(e.data);
             // console.log("ret:",msg)
@@ -203,7 +203,7 @@ export default {
                 return false
             }
             // console.log(self.inputAmount)
-            var url = "http://localhost:3344/api?type=donate&name="+self.inputName+"&amount="+parseFloat(self.inputAmount)+"&token="+self.token
+            var url = "http://119.23.237.215:3344/api?type=donate&name="+self.inputName+"&amount="+parseFloat(self.inputAmount)+"&token="+self.token
             self.axios.get(url).then((response) => {
                 self.inputName = ""
                 self.inputAmount = ""

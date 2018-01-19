@@ -29,9 +29,9 @@
                 <div class="weui-navbar__item" v-on:click="showpanel =2"  :class="showpanel==2? 'weui-bar__item_on':''">
                     捐款记录
                 </div>
-                <div class="weui-navbar__item"  v-on:click="showpanel =3" :class="showpanel==3? 'weui-bar__item_on':''">
+                <!-- <div class="weui-navbar__item"  v-on:click="showpanel =3" :class="showpanel==3? 'weui-bar__item_on':''">
                     推送消息
-                </div>
+                </div> -->
             </div>
             <div class="weui-tab__panel">
 
@@ -81,7 +81,7 @@
 
                 
                 <!--消息推送s-->
-                <div v-if="showpanel==3">
+                <!-- <div v-if="showpanel==3">
                     <div class="weui-cells__title">消息推送</div>
 
                     <div class="weui-cells weui-cells_form">
@@ -94,7 +94,7 @@
                     <div class="weui-btn-area">
                         <a class="weui-btn weui-btn_primary" href="javascript:"  v-on:click="pushMsg">提交该消息</a>
                     </div>
-                </div><!--消息推送e-->
+                </div>消息推送e -->
 
             </div><!--展页内容end-->
 

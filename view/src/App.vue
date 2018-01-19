@@ -7,7 +7,7 @@
         <!-- <p class="weui-footer__links">
             <a href="javascript:void(0);" class="weui-footer__link">底部链接</a>
         </p> -->
-        <p class="weui-footer__text">Copyright © 2018 1zh.github.io</p>
+        <p class="weui-footer__text">Copyright © 2018</p>
     </div>
   </div>
 </template>

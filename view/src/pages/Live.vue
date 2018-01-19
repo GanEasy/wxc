@@ -1,11 +1,14 @@
 <template>
   <div>
-  <div class="page__hd">
-      <h1 class="page__title">“迎春送福•领墨宝献爱心”<br>
-捐款清单</h1>
-      <p class="page__desc">排名不分先后，本名单实时更新！</p>
+  <div class="page__hd" style="">
+      <h1 class="page__title">“迎春送福•领墨宝献爱心”活动捐款清单</h1>
+  </div>
+  <img src="../assets/cover.jpg" style="max-width: 100%;">
+  
+  <div class="page__hd" style="">
       <p class="page__desc">捐款人次：{{list.length}}</p>
       <p class="page__desc">捐款总金额：{{total}} 元</p>
+      <p class="page__desc">排名不分先后，本名单实时更新！</p>
   </div>
     <div class="weui-cells">
         <div class="weui-cell" v-for="item in list" :key="item.id" >
@@ -88,6 +91,11 @@ export default {
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
 .page__hd {
-    padding: 40px;
+    padding: 20px;
+}
+.page__desc{
+    font-size: 1.2em;
+    color:black;
+    font-weight: bold;
 }
 </style>

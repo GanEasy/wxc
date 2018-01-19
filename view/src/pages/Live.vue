@@ -1,7 +1,8 @@
 <template>
   <div>
   <div class="page__hd">
-      <h1 class="page__title">捐赠人名单</h1>
+      <h1 class="page__title">“迎春送福•领墨宝献爱心”<br>
+捐款清单</h1>
       <p class="page__desc">排名不分先后，本名单实时更新！</p>
       <p class="page__desc">捐款人次：{{list.length}}</p>
       <p class="page__desc">捐款总金额：{{total}} 元</p>

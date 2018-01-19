@@ -8,7 +8,7 @@
   <div class="page__hd" style="">
       <p class="page__desc">捐款人次：{{list.length}}</p>
       <p class="page__desc">捐款总金额：{{total}} 元</p>
-      <p class="page__desc">排名不分先后，本名单实时更新！</p>
+      <p class="page__desc">排名不分先后，名单实时更新！</p>
   </div>
     <div class="weui-cells">
         <div class="weui-cell" v-for="item in list" :key="item.id" >
@@ -94,7 +94,7 @@ export default {
     padding: 20px;
 }
 .page__desc{
-    font-size: 1.2em;
+    font-size: 1.0em;
     color:black;
     font-weight: bold;
 }
